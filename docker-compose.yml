@@ -1,0 +1,35 @@
+version: '3'
+services:
+  sabnzbd:
+    ports:
+     - "9090:9090"
+     - "8080:8080"
+    volumes:
+     - <path>:/downloads
+     - <path>:/incomplete-downloads
+     - <path>:/config
+    environment:
+     - PGID=<PGID>
+     - PUID=<PUID>
+    image: "linuxserver/sabnzbd"
+  sonarr:
+    ports:
+     - "8989:8989"
+    volumes:
+     - /etc/localtime:/etc/localtime:ro
+     - <path>:/config
+     - <path>:/downloads
+     - <path>:/tv
+    environment:
+     - PGID=<PGID>
+     - PUID=<PUID>
+    links:
+     - sabnzbd
+    image: "linuxserver/sonarr"
+  reverseproxy:
+    build: ./reverseproxy
+    ports:
+     - "80:80"
+    links:
+    - sonarr
+    - sabnzbd
